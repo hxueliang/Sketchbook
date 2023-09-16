@@ -124,10 +124,14 @@ export class World
 		this.composer.addPass( fxaaPass );
 
 		// Physics
+		// 初始化物理世界
 		this.physicsWorld = new CANNON.World();
 		this.physicsWorld.gravity.set(0, -9.81, 0);
+		// 改进碰撞体的算法，SAPBroadphase算法(扫描和剪枝的算法)有更好的性能
 		this.physicsWorld.broadphase = new CANNON.SAPBroadphase(this.physicsWorld);
+		// 解算器的迭代次数，越高越精确，但性能也会下降
 		this.physicsWorld.solver.iterations = 10;
+		// 当刚体移动非常缓慢时，可以将其休眠，以提高性能
 		this.physicsWorld.allowSleep = true;
 
 		this.parallelPairs = [];
