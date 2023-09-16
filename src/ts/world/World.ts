@@ -158,6 +158,7 @@ export class World
 		this.inputManager = new InputManager(this, this.renderer.domElement);
 		// 初始化相机操作模块
 		this.cameraOperator = new CameraOperator(this, this.camera, this.params.Mouse_Sensitivity);
+		// 初始化天空
 		this.sky = new Sky(this);
 		
 		// Load scene if path is supplied

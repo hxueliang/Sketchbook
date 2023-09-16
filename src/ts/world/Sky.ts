@@ -1,3 +1,6 @@
+/**
+ * 初始化天空
+ */
 import { SkyShader } from '../../lib/shaders/SkyShader';
 import * as THREE from 'three';
 import { World } from './World';
@@ -50,6 +53,8 @@ export class Sky extends THREE.Object3D implements IUpdatable
 		});
 
 		// Mesh
+		// 天空的本质是一个球
+		// 用半径1000的球做天空
 		this.skyMesh = new THREE.Mesh(
 			new THREE.SphereBufferGeometry(1000, 24, 12),
 			this.skyMaterial
@@ -57,6 +62,7 @@ export class Sky extends THREE.Object3D implements IUpdatable
 		this.attach(this.skyMesh);
 
 		// Ambient light
+		// 用半球光来实现环境光
 		this.hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 1.0 );
 		this.refreshHemiIntensity();
 		this.hemiLight.color.setHSL( 0.59, 0.4, 0.6 );
@@ -81,28 +87,34 @@ export class Sky extends THREE.Object3D implements IUpdatable
 
 			for (let i = amount - 1; i >= 0; i--)
 			{
+				// 按指数方式划分
 				arr.push(Math.pow(1 / 4, i));
 			}
 
 			return arr;
 		};
 
+		// 级联阴影：分层实现阴影
 		this.csm = new CSM({
 			fov: 80,
 			far: 250,	// maxFar
 			lightIntensity: 2.5,
+			// 阴影级联的数量
 			cascades: 3,
 			shadowMapSize: 2048,
 			camera: world.camera,
 			parent: world.graphicsWorld,
 			mode: 'custom',
+			// 级别划分的方式
 			customSplitsCallback: splitsCallback
 		});
 		this.csm.fade = true;
 
 		this.refreshSunPosition();
 		
+		// 添加到图像世界，即threejs
 		world.graphicsWorld.add(this);
+		// 添加进注册表
 		world.registerUpdatable(this);
 	}
 
