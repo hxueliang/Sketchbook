@@ -1,3 +1,6 @@
+/**
+ * 按键绑定类
+ */
 export class KeyBinding
 {
 	public eventCodes: string[];

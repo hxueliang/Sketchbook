@@ -156,6 +156,7 @@ export class World
 		// Initialization
 		// 初始化输入管理模块
 		this.inputManager = new InputManager(this, this.renderer.domElement);
+		// 初始化相机操作模块
 		this.cameraOperator = new CameraOperator(this, this.camera, this.params.Mouse_Sensitivity);
 		this.sky = new Sky(this);
 		

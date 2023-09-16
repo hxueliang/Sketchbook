@@ -34,8 +34,19 @@ export class CameraOperator implements IInputReceiver, IUpdatable
 
 	public characterCaller: Character;
 
-	constructor(world: World, camera: THREE.Camera, sensitivityX: number = 1, sensitivityY: number = sensitivityX * 0.8)
-	{
+	/**
+	 * 相机操作
+	 * @param world - 当前世界
+	 * @param camera - 相机
+	 * @param sensitivityX - 鼠标灵敏度
+	 * @param sensitivityY - 鼠标灵敏度
+	 */
+	constructor(
+		world: World, 
+		camera: THREE.Camera, 
+		sensitivityX: number = 1, 
+		sensitivityY: number = sensitivityX * 0.8
+	) {
 		this.world = world;
 		this.camera = camera;
 		this.target = new THREE.Vector3();
@@ -43,13 +54,20 @@ export class CameraOperator implements IInputReceiver, IUpdatable
 
 		this.movementSpeed = 0.06;
 		this.radius = 3;
+		// 俯仰面（竖直面）内的角度，范围0~180度，符号θ
 		this.theta = 0;
+		// 方位面（水平面）内的角度，范围0~360度，φ
 		this.phi = 0;
 
+		// 鼠标按下的位置
 		this.onMouseDownPosition = new THREE.Vector2();
+		// 鼠标竖直方向
 		this.onMouseDownTheta = this.theta;
+		// 鼠标水平方向
 		this.onMouseDownPhi = this.phi;
 
+		// 动作
+		// 动作名: 按键绑定对象
 		this.actions = {
 			'forward': new KeyBinding('KeyW'),
 			'back': new KeyBinding('KeyS'),
@@ -60,6 +78,7 @@ export class CameraOperator implements IInputReceiver, IUpdatable
 			'fast': new KeyBinding('ShiftLeft'),
 		};
 
+		// 将对象加入更新注册表
 		world.registerUpdatable(this);
 	}
 
