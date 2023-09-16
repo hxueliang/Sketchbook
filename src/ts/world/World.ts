@@ -154,6 +154,7 @@ export class World
 		this.createParamsGUI(scope);
 
 		// Initialization
+		// 初始化输入管理模块
 		this.inputManager = new InputManager(this, this.renderer.domElement);
 		this.cameraOperator = new CameraOperator(this, this.camera, this.params.Mouse_Sensitivity);
 		this.sky = new Sky(this);
@@ -321,7 +322,7 @@ export class World
 
 	public registerUpdatable(registree: IUpdatable): void
 	{
-		this.updatables.push(registree);
+		this.updatables.push(registree); // 将需要更新的对象，添加进注册表
 		this.updatables.sort((a, b) => (a.updateOrder > b.updateOrder) ? 1 : -1);
 	}
 

@@ -11,8 +11,9 @@ export class InputManager implements IUpdatable
 	public domElement: any;
 	public pointerLock: any;
 	public isLocked: boolean;
-	public inputReceiver: IInputReceiver;
+	public inputReceiver: IInputReceiver; // 输入操作的接收者
 
+	// 定义函数
 	public boundOnMouseDown: (evt: any) => void;
 	public boundOnMouseMove: (evt: any) => void;
 	public boundOnMouseUp: (evt: any) => void;
@@ -22,6 +23,11 @@ export class InputManager implements IUpdatable
 	public boundOnKeyDown: (evt: any) => void;
 	public boundOnKeyUp: (evt: any) => void;
 	
+	/**
+	 * 输入管理
+	 * @param world - 当前世界(当前世界里有：图像世界和物理世界)
+	 * @param domElement - canvas画布，各种操作都是在画布中进行，可以做事件监听
+	 */
 	constructor(world: World, domElement: HTMLElement)
 	{
 		this.world = world;
@@ -29,6 +35,7 @@ export class InputManager implements IUpdatable
 		this.domElement = domElement || document.body;
 		this.isLocked = false;
 		
+		// 创建函数
 		// Bindings for later event use
 		// Mouse
 		this.boundOnMouseDown = (evt) => this.onMouseDown(evt);
@@ -44,6 +51,7 @@ export class InputManager implements IUpdatable
 		this.boundOnKeyDown = (evt) => this.onKeyDown(evt);
 		this.boundOnKeyUp = (evt) => this.onKeyUp(evt);
 
+		// 初始化事件监听器
 		// Init event listeners
 		// Mouse
 		this.domElement.addEventListener('mousedown', this.boundOnMouseDown, false);
@@ -55,6 +63,7 @@ export class InputManager implements IUpdatable
 		document.addEventListener('keydown', this.boundOnKeyDown, false);
 		document.addEventListener('keyup', this.boundOnKeyUp, false);
 
+		// 将需要更新的对象，在注册表里注册
 		world.registerUpdatable(this);
 	}
 
