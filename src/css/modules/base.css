@@ -32,3 +32,8 @@ h1 {
 	top: 0;
 	height: 100vh;
 }
+
+#loading-screen-background.hxl-custom {
+	background-image: url(/build/assets/imgs/bg.png);
+	background-size: cover;
+}
