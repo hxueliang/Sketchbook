@@ -1,3 +1,6 @@
+/**
+ * 当前加载文件的情况
+ */
 export class LoadingTrackerEntry
 {
 	public path: string;

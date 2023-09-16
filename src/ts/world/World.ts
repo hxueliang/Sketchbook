@@ -162,12 +162,16 @@ export class World
 		this.sky = new Sky(this);
 		
 		// Load scene if path is supplied
+		// 如果路径提供，加载相应的场景
 		if (worldScenePath !== undefined)
 		{
+			// 初始化加载管理器
 			let loadingManager = new LoadingManager(this);
+			// 加载完成的回调函数
 			loadingManager.onFinishedCallback = () =>
 			{
 				this.update(1, 1);
+				// 设置时间因子
 				this.setTimeScale(1);
 	
 				Swal.fire({
@@ -177,6 +181,7 @@ export class World
 					confirmButtonText: 'Okay',
 					buttonsStyling: false,
 					onClose: () => {
+						// 显示用户控制界面
 						UIManager.setUserInterfaceVisible(true);
 					}
 				});

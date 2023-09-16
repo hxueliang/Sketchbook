@@ -1,3 +1,6 @@
+/**
+ * 加载管理器
+ */
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { LoadingTrackerEntry } from './LoadingTrackerEntry';
 import { UIManager } from './UIManager';
@@ -19,13 +22,16 @@ export class LoadingManager
 		this.world = world;
 		this.gltfLoader = new GLTFLoader();
 
+		// 时间因子，控制速度
 		this.world.setTimeScale(0);
+		// UI界面管理
 		UIManager.setUserInterfaceVisible(false);
 		UIManager.setLoadingScreenVisible(true);
 	}
 
 	public loadGLTF(path: string, onLoadingFinished: (gltf: any) => void): void
 	{
+		// 添加到加载跟踪器
 		let trackerEntry = this.addLoadingEntry(path);
 
 		this.gltfLoader.load(path,
@@ -57,13 +63,17 @@ export class LoadingManager
 
 	public doneLoading(trackerEntry: LoadingTrackerEntry): void
 	{
+		// 追踪对象状态改为已完成
 		trackerEntry.finished = true;
+		// 追踪对象进度改为1
 		trackerEntry.progress = 1;
 
+		// 完成
 		if (this.isLoadingDone())
 		{
 			if (this.onFinishedCallback !== undefined) 
 			{
+				// 加载完成的回调函数
 				this.onFinishedCallback();
 			}
 			else
