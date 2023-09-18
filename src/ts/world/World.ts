@@ -399,6 +399,7 @@ export class World
 						this.paths.push(new Path(child));
 					}
 
+					// 读取场景配置
 					if (child.userData.data === 'scenario')
 					{
 						this.scenarios.push(new Scenario(child, this));
