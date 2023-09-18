@@ -335,7 +335,9 @@ export class World
 
 	public remove(worldEntity: IWorldEntity): void
 	{
+		// 从世界中移除
 		worldEntity.removeFromWorld(this);
+		// 从注册表中移除
 		this.unregisterUpdatable(worldEntity);
 	}
 
@@ -408,12 +410,15 @@ export class World
 			}
 		});
 
+		// 把模型添加到世界
 		this.graphicsWorld.add(gltf.scene);
 
 		// Launch default scenario
+		// 设置默认id，来载入场景
 		let defaultScenarioID: string;
 		for (const scenario of this.scenarios) {
 			if (scenario.default) {
+				// 拿到默认场景id
 				defaultScenarioID = scenario.id;
 				break;
 			}
@@ -421,15 +426,23 @@ export class World
 		if (defaultScenarioID !== undefined) this.launchScenario(defaultScenarioID, loadingManager);
 	}
 	
+	/**
+	 * 载入场景
+	 * @param scenarioID 场景id 
+	 * @param loadingManager 加载管理器：管理汽车、人物角色等
+	 */
 	public launchScenario(scenarioID: string, loadingManager?: LoadingManager): void
 	{
 		this.lastScenarioID = scenarioID;
 
+		// 清除场景之前所有创建的实体
 		this.clearEntities();
 
 		// Launch default scenario
+		// 如果没有，创建加载管理器
 		if (!loadingManager) loadingManager = new LoadingManager(this);
 		for (const scenario of this.scenarios) {
+			// 如果是这个场景的id 或者是总是重生
 			if (scenario.id === scenarioID || scenario.spawnAlways) {
 				scenario.launch(loadingManager, this);
 			}
@@ -449,13 +462,18 @@ export class World
 		}
 	}
 
+	/**
+	 * 清除场景实体
+	 */
 	public clearEntities(): void
 	{
+		// 清除角色实体
 		for (let i = 0; i < this.characters.length; i++) {
 			this.remove(this.characters[i]);
 			i--;
 		}
 
+		// 清除交通工具实体
 		for (let i = 0; i < this.vehicles.length; i++) {
 			this.remove(this.vehicles[i]);
 			i--;

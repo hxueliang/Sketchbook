@@ -345,6 +345,10 @@ export abstract class Vehicle extends THREE.Object3D implements IWorldEntity
 		}
 	}
 
+	/**
+	 * 从世界中移除
+	 * @param world 世界对象
+	 */
 	public removeFromWorld(world: World): void
 	{
 		if (!_.includes(world.vehicles, this))
@@ -353,14 +357,19 @@ export abstract class Vehicle extends THREE.Object3D implements IWorldEntity
 		}
 		else
 		{
+			// 清除引用
 			this.world = undefined;
+			// 从交通工具中移除
 			_.pull(world.vehicles, this);
+			// 从图像世界中移除
 			world.graphicsWorld.remove(this);
 			// world.physicsWorld.remove(this.collision);
+			// 投射射线移除
 			this.rayCastVehicle.removeFromWorld(world.physicsWorld);
 
 			this.wheels.forEach((wheel) =>
 			{
+				// 移除车轮子
 				world.graphicsWorld.remove(wheel.wheelObject);
 			});
 		}

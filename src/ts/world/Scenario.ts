@@ -122,14 +122,22 @@ export class Scenario
 		this.world.scenarioGUIFolder.add(this.world.params, this.name);
 	}
 
+	/**
+	 * 场景加载
+	 * @param loadingManager 加载管理器
+	 * @param world 世界对象
+	 */
 	public launch(loadingManager: LoadingManager, world: World): void
 	{
+		// console.log('launch',this.name);
+		// console.log(this.spawnPoints);
 		this.spawnPoints.forEach((sp) => {
 			sp.spawn(loadingManager, world);
 		});
 
 		if (!this.spawnAlways)
 		{
+			// 如果这个场景是不会总是重生，那么每次加载进来就会显示欢迎界面
 			loadingManager.createWelcomeScreenCallback(this);
 
 			world.cameraOperator.theta = this.initialCameraAngle;
