@@ -430,20 +430,29 @@ export class Character extends THREE.Object3D implements IWorldEntity
 		}
 	}
 
+	/**
+	 * 角色更新
+	 * @param timeStep 
+	 */
 	public update(timeStep: number): void
 	{
+		// 行为更新
 		this.behaviour?.update(timeStep);
+		// 状态更新，是否进入交通工具
 		this.vehicleEntryInstance?.update(timeStep);
 		// console.log(this.occupyingSeat);
+		// 角色状态更新
 		this.charState?.update(timeStep);
 
 		// this.visuals.position.copy(this.modelOffset);
 		if (this.physicsEnabled) this.springMovement(timeStep);
 		if (this.physicsEnabled) this.springRotation(timeStep);
 		if (this.physicsEnabled) this.rotateModel();
+		// 动画更新
 		if (this.mixer !== undefined) this.mixer.update(timeStep);
 
 		// Sync physics/graphics
+		// 物理世界与threejs世界同步
 		if (this.physicsEnabled)
 		{
 			this.position.set(
@@ -460,6 +469,7 @@ export class Character extends THREE.Object3D implements IWorldEntity
 			this.characterCapsule.body.interpolatedPosition.copy(Utils.cannonVector(newPos));
 		}
 
+		// 更新世界矩阵
 		this.updateMatrixWorld();
 	}
 
@@ -814,14 +824,21 @@ export class Character extends THREE.Object3D implements IWorldEntity
 		}
 	}
 
+	/**
+	 * 更新前预处理回调
+	 * @param body 
+	 * @param character 
+	 */
 	public physicsPreStep(body: CANNON.Body, character: Character): void
 	{
 		character.feetRaycast();
 
 		// Raycast debug
+		// 如果击中
 		if (character.rayHasHit)
 		{
 			if (character.raycastBox.visible) {
+				// 如果击中，把红色立方体设置在，击中点的位置
 				character.raycastBox.position.x = character.rayResult.hitPointWorld.x;
 				character.raycastBox.position.y = character.rayResult.hitPointWorld.y;
 				character.raycastBox.position.z = character.rayResult.hitPointWorld.z;
@@ -830,11 +847,15 @@ export class Character extends THREE.Object3D implements IWorldEntity
 		else
 		{
 			if (character.raycastBox.visible) {
+				// 如果没有击中，把红色立方体设置在，离刚体y轴偏移这么多的位置
 				character.raycastBox.position.set(body.position.x, body.position.y - character.rayCastLength - character.raySafeOffset, body.position.z);
 			}
 		}
 	}
 
+	/**
+	 * 脚下的光线投射
+	 */
 	public feetRaycast(): void
 	{
 		// Player ray casting
@@ -848,22 +869,32 @@ export class Character extends THREE.Object3D implements IWorldEntity
 			skipBackfaces: true      /* ignore back faces */
 		};
 		// Cast the ray
+		// 是否击中物体
 		this.rayHasHit = this.world.physicsWorld.raycastClosest(start, end, rayCastOptions, this.rayResult);
 	}
 
+	/**
+	 * 更新后要做那些处理
+	 * @param body 
+	 * @param character 
+	 */
 	public physicsPostStep(body: CANNON.Body, character: Character): void
 	{
 		// Get velocities
+		// 获取速度
 		let simulatedVelocity = new THREE.Vector3(body.velocity.x, body.velocity.y, body.velocity.z);
 
 		// Take local velocity
+		// 获取局部速度
 		let arcadeVelocity = new THREE.Vector3().copy(character.velocity).multiplyScalar(character.moveSpeed);
 		// Turn local into global
+		// 将局部速度转换为全局速度
 		arcadeVelocity = Utils.appplyVectorMatrixXZ(character.orientation, arcadeVelocity);
 
 		let newVelocity = new THREE.Vector3();
 
 		// Additive velocity mode
+		// 附加的速度模式
 		if (character.arcadeVelocityIsAdditive)
 		{
 			newVelocity.copy(simulatedVelocity);
@@ -888,9 +919,11 @@ export class Character extends THREE.Object3D implements IWorldEntity
 		if (character.rayHasHit)
 		{
 			// Flatten velocity
+			// 如果角色碰到地面，就贴着地面
 			newVelocity.y = 0;
 
 			// Move on top of moving objects
+			// 在移动对象的顶部移动
 			if (character.rayResult.body.mass > 0)
 			{
 				let pointVelocity = new CANNON.Vec3();
@@ -900,6 +933,7 @@ export class Character extends THREE.Object3D implements IWorldEntity
 
 			// Measure the normal vector offset from direct "up" vector
 			// and transform it into a matrix
+			// 测量法线矢量与直接“向上”矢量的偏移量，并将其转换为矩阵
 			let up = new THREE.Vector3(0, 1, 0);
 			let normal = new THREE.Vector3(character.rayResult.hitNormalWorld.x, character.rayResult.hitNormalWorld.y, character.rayResult.hitNormalWorld.z);
 			let q = new THREE.Quaternion().setFromUnitVectors(up, normal);
@@ -909,9 +943,11 @@ export class Character extends THREE.Object3D implements IWorldEntity
 			newVelocity.applyMatrix4(m);
 
 			// Compensate for gravity
+			// 补偿重力
 			// newVelocity.y -= body.world.physicsWorld.gravity.y / body.character.world.physicsFrameRate;
 
 			// Apply velocity
+			// 应用速度
 			body.velocity.x = newVelocity.x;
 			body.velocity.y = newVelocity.y;
 			body.velocity.z = newVelocity.z;
@@ -921,6 +957,7 @@ export class Character extends THREE.Object3D implements IWorldEntity
 		else
 		{
 			// If we're in air
+			// 如果在空气中，用重力加速度
 			body.velocity.x = newVelocity.x;
 			body.velocity.y = newVelocity.y;
 			body.velocity.z = newVelocity.z;
@@ -935,6 +972,7 @@ export class Character extends THREE.Object3D implements IWorldEntity
 		if (character.wantsToJump)
 		{
 			// If initJumpSpeed is set
+			// 如果设置了初始的跳跃速度
 			if (character.initJumpSpeed > -1)
 			{
 				// Flatten velocity
@@ -944,16 +982,20 @@ export class Character extends THREE.Object3D implements IWorldEntity
 			}
 			else {
 				// Moving objects compensation
+				// 移动对象补偿
 				let add = new CANNON.Vec3();
 				character.rayResult.body.getVelocityAtWorldPoint(character.rayResult.hitPointWorld, add);
 				body.velocity.vsub(add, body.velocity);
 			}
 
 			// Add positive vertical velocity 
+			// 添加正垂直速度
 			body.velocity.y += 4;
 			// Move above ground by 2x safe offset value
+			// 在地面上移动2倍安全偏移值
 			body.position.y += character.raySafeOffset * 2;
 			// Reset flag
+			// 垂直想要跳跃标志
 			character.wantsToJump = false;
 		}
 	}
