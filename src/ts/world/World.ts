@@ -239,8 +239,13 @@ export class World
 	public updatePhysics(timeStep: number): void
 	{
 		// Step the physics world
+		/**
+		 * @param physicsFrameTime 理论的更新时间
+		 * @param timeStep 实际的更新时间
+		 */
 		this.physicsWorld.step(this.physicsFrameTime, timeStep);
 
+		// 角色是否超出边界，如果超出恢复到重生的原点
 		this.characters.forEach((char) => {
 			if (this.isOutOfBounds(char.characterCapsule.body.position))
 			{
@@ -248,6 +253,7 @@ export class World
 			}
 		});
 
+		// 交通工具是否超出边界，如果超出恢复到重生的原点
 		this.vehicles.forEach((vehicle) => {
 			if (this.isOutOfBounds(vehicle.rayCastVehicle.chassisBody.position))
 			{
@@ -259,6 +265,11 @@ export class World
 		});
 	}
 
+	/**
+	 * 是否超出边界
+	 * @param position 位置
+	 * @returns 
+	 */
 	public isOutOfBounds(position: CANNON.Vec3): boolean
 	{
 		let inside = position.x > -211.882 && position.x < 211.882 &&
@@ -269,16 +280,27 @@ export class World
 		return !inside && belowSeaLevel;
 	}
 
+	/**
+	 * 重生
+	 * @param body 
+	 * @param position 
+	 */
 	public outOfBoundsRespawn(body: CANNON.Body, position?: CANNON.Vec3): void
 	{
 		let newPos = position || new CANNON.Vec3(0, 16, 0);
 		let newQuat = new CANNON.Quaternion(0, 0, 0, 1);
 
+		// 重置位置
 		body.position.copy(newPos);
+		// 重置插值位置
 		body.interpolatedPosition.copy(newPos);
+		// 重置旋转
 		body.quaternion.copy(newQuat);
+		// 重置插值旋转
 		body.interpolatedQuaternion.copy(newQuat);
+		// 重置速度
 		body.velocity.setZero();
+		// 重置角速度
 		body.angularVelocity.setZero();
 	}
 
