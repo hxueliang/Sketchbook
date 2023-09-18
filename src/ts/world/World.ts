@@ -211,19 +211,28 @@ export class World
 
 	// Update
 	// Handles all logic updates.
+	/**
+	 * g更新函数
+	 * @param timeStep 结合了时间因子的时间步长
+	 * @param unscaledTimeStep 不成比例的时间步长
+	 */
 	public update(timeStep: number, unscaledTimeStep: number): void
 	{
+		// 更新物理世界
 		this.updatePhysics(timeStep);
 
 		// Update registred objects
+		// 更新注册表中的所有对象
 		this.updatables.forEach((entity) => {
 			entity.update(timeStep, unscaledTimeStep);
 		});
 
 		// Lerp time scale
+		// 随着时间比例变化，进行插值处理，不断逼迫目标值
 		this.params.Time_Scale = THREE.MathUtils.lerp(this.params.Time_Scale, this.timeScaleTarget, 0.2);
 
 		// Physics debug
+		// 显示物理碰撞体
 		if (this.params.Debug_Physics) this.cannonDebugRenderer.update();
 	}
 
