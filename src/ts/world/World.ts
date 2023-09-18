@@ -360,6 +360,8 @@ export class World
 					}
 				}
 
+				// 读取模型配置
+				// 设置位置 blender/物体/自定义属性
 				if (child.userData.hasOwnProperty('data'))
 				{
 					if (child.userData.data === 'physics')
@@ -367,6 +369,7 @@ export class World
 						if (child.userData.hasOwnProperty('type')) 
 						{
 							// Convex doesn't work! Stick to boxes!
+							// 读取碰撞体box
 							if (child.userData.type === 'box')
 							{
 								let phys = new BoxCollider({size: new THREE.Vector3(child.scale.x, child.scale.y, child.scale.z)});
@@ -380,6 +383,7 @@ export class World
 
 								this.physicsWorld.addBody(phys.body);
 							}
+							// 读取碰撞体trimesh
 							else if (child.userData.type === 'trimesh')
 							{
 								let phys = new TrimeshCollider(child, {});
