@@ -205,6 +205,7 @@ export class World
 			});
 		}
 
+		// 渲染
 		this.render(this);
 	}
 
@@ -278,8 +279,13 @@ export class World
 	 * Calls world's "update" function before rendering.
 	 * @param {World} world 
 	 */
+	/**
+	 * 循环渲染函数
+	 * @param world 
+	 */
 	public render(world: World): void
 	{
+		// 获取帧与帧的时间间隔
 		this.requestDelta = this.clock.getDelta();
 
 		requestAnimationFrame(() =>
@@ -288,30 +294,39 @@ export class World
 		});
 
 		// Getting timeStep
+		// 不成比例的时间步长 = 请求下一帧的时间 + 物理世界更新的代码运行时间 + threejs代码渲染运行的时间
 		let unscaledTimeStep = (this.requestDelta + this.renderDelta + this.logicDelta) ;
+		// 时间步长 = 不成比例的时间步长 + 时间因子
 		let timeStep = unscaledTimeStep * this.params.Time_Scale;
+		// 最小的时间步长为30帧的时间步长
 		timeStep = Math.min(timeStep, 1 / 30);    // min 30 fps
 
 		// Logic
 		world.update(timeStep, unscaledTimeStep);
 
 		// Measuring logic time
+		// 物理更新的代码运行时间
 		this.logicDelta = this.clock.getDelta();
 
 		// Frame limiting
+		// 获取两帧之间的时间差
 		let interval = 1 / 60;
 		this.sinceLastFrame += this.requestDelta + this.renderDelta + this.logicDelta;
 		this.sinceLastFrame %= interval;
 
 		// Stats end
+		// 监听fps
 		this.stats.end();
 		this.stats.begin();
 
 		// Actual rendering with a FXAA ON/OFF switch
+		// 是开启fxaa抗锯齿，使用后期合成浸染
 		if (this.params.FXAA) this.composer.render();
+		// 否则，使用默认的渲染器渲染
 		else this.renderer.render(this.graphicsWorld, this.camera);
 
 		// Measuring render time
+		// 浸染的代码运行时间
 		this.renderDelta = this.clock.getDelta();
 	}
 
