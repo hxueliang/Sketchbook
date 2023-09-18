@@ -7,6 +7,9 @@ import
 import { ICharacterState } from '../../interfaces/ICharacterState';
 import { Character } from '../Character';
 
+/**
+ * 发呆状态
+ */
 export class Idle extends CharacterStateBase implements ICharacterState
 {
 	constructor(character: Character)

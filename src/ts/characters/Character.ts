@@ -208,8 +208,13 @@ export class Character extends THREE.Object3D implements IWorldEntity
 	 * Set state to the player. Pass state class (function) name.
 	 * @param {function} State 
 	 */
+	/**
+	 * 设置状态
+	 * @param state 
+	 */
 	public setState(state: ICharacterState): void
 	{
+		// 初始化角色状态
 		this.charState = state;
 		this.charState.onInputChange();
 	}
@@ -302,6 +307,12 @@ export class Character extends THREE.Object3D implements IWorldEntity
 		});
 	}
 
+	/**
+	 * 处理键盘事件
+	 * @param event 
+	 * @param code 
+	 * @param pressed 
+	 */
 	public handleKeyboardEvent(event: KeyboardEvent, code: string, pressed: boolean): void
 	{
 		if (this.controlledObject !== undefined)
@@ -311,12 +322,17 @@ export class Character extends THREE.Object3D implements IWorldEntity
 		else
 		{
 			// Free camera
+			// 按了shift + c 切换自由相机
 			if (code === 'KeyC' && pressed === true && event.shiftKey === true)
 			{
+				// 重置控制器
 				this.resetControls();
+				// 由相机操作接管
 				this.world.cameraOperator.characterCaller = this;
+				// 输入操作的接收者改为相机控制器
 				this.world.inputManager.setInputReceiver(this.world.cameraOperator);
 			}
+			// 按了shift + r 重启场景
 			else if (code === 'KeyR' && pressed === true && event.shiftKey === true)
 			{
 				this.world.restartScenario();
@@ -327,8 +343,10 @@ export class Character extends THREE.Object3D implements IWorldEntity
 					if (this.actions.hasOwnProperty(action)) {
 						const binding = this.actions[action];
 	
+						// 判断之前绑定的按键里，是否有当前的的按键
 						if (_.includes(binding.eventCodes, code))
 						{
+							// 切换对应的动作行为
 							this.triggerAction(action, pressed);
 						}
 					}
@@ -382,37 +400,53 @@ export class Character extends THREE.Object3D implements IWorldEntity
 		}
 	}
 
+	/**
+	 * 切换动作
+	 * @param actionName 
+	 * @param value 
+	 */
 	public triggerAction(actionName: string, value: boolean): void
 	{
 		// Get action and set it's parameters
+		// 根据名称拿到动作
 		let action = this.actions[actionName];
 
+		// 是否按下状态
 		if (action.isPressed !== value)
 		{
 			// Set value
 			action.isPressed = value;
 
 			// Reset the 'just' attributes
+			// 重置按下状态
 			action.justPressed = false;
+			// 重置抬起状态
 			action.justReleased = false;
 
 			// Set the 'just' attributes
+			// 根据value，设置是按下还是抬起
 			if (value) action.justPressed = true;
 			else action.justReleased = true;
 
 			// Tell player to handle states according to new input
+			// 告诉玩家修改角色状态
 			this.charState.onInputChange();
 
 			// Reset the 'just' attributes
+			// 复原
 			action.justPressed = false;
 			action.justReleased = false;
 		}
 	}
 
+	/**
+	 * 设置角色接管输入控制
+	 */
 	public takeControl(): void
 	{
 		if (this.world !== undefined)
 		{
+			// 设置输入的接收者为this，即当前角色
 			this.world.inputManager.setInputReceiver(this);
 		}
 		else
@@ -473,6 +507,10 @@ export class Character extends THREE.Object3D implements IWorldEntity
 		this.updateMatrixWorld();
 	}
 
+	/**
+	 * 输入接收者初始化
+	 * @returns 
+	 */
 	public inputReceiverInit(): void
 	{
 		if (this.controlledObject !== undefined)
@@ -488,32 +526,35 @@ export class Character extends THREE.Object3D implements IWorldEntity
 		this.displayControls();
 	}
 
+	/**
+	 * 设置控制面板信息
+	 */
 	public displayControls(): void
 	{
 		this.world.updateControls([
 			{
 				keys: ['W', 'A', 'S', 'D'],
-				desc: 'Movement'
+				desc: '移动'
 			},
 			{
 				keys: ['Shift'],
-				desc: 'Sprint'
+				desc: '加速'
 			},
 			{
 				keys: ['Space'],
-				desc: 'Jump'
+				desc: '跳跃'
 			},
 			{
 				keys: ['F', 'or', 'G'],
-				desc: 'Enter vehicle'
+				desc: '进入交通工具'
 			},
 			{
 				keys: ['Shift', '+', 'R'],
-				desc: 'Respawn'
+				desc: '重生'
 			},
 			{
 				keys: ['Shift', '+', 'C'],
-				desc: 'Free camera'
+				desc: '自由相机'
 			},
 		]);
 	}

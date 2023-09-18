@@ -30,6 +30,7 @@ export class CharacterSpawnPoint implements ISpawnPoint
 			player.setOrientation(forward, true);
 			
 			world.add(player);
+			// 设置角色接管输入控制
 			player.takeControl();
 		});
 	}

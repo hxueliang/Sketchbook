@@ -77,6 +77,10 @@ export class InputManager implements IUpdatable
 		this.inputReceiver?.inputReceiverUpdate(unscaledTimeStep);
 	}
 
+	/**
+	 * 设置输入的接收者
+	 * @param receiver 接收者
+	 */
 	public setInputReceiver(receiver: IInputReceiver): void
 	{
 		this.inputReceiver = receiver;
@@ -149,18 +153,28 @@ export class InputManager implements IUpdatable
 		}
 	}
 
+	/**
+	 * 键盘按下事件
+	 * @param event 
+	 */
 	public onKeyDown(event: KeyboardEvent): void
 	{
 		if (this.inputReceiver !== undefined)
 		{
+			// true为按下
 			this.inputReceiver.handleKeyboardEvent(event, event.code, true);
 		}
 	}
 
+	/**
+	 * 键盘抬起事件
+	 * @param event 
+	 */
 	public onKeyUp(event: KeyboardEvent): void
 	{
 		if (this.inputReceiver !== undefined)
 		{
+			// false为按下
 			this.inputReceiver.handleKeyboardEvent(event, event.code, false);
 		}
 	}
