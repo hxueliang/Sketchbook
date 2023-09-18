@@ -86,27 +86,39 @@ export class Character extends THREE.Object3D implements IWorldEntity
 	{
 		super();
 
+		// 读取角色模型数据
 		this.readCharacterData(gltf);
+		// 根据模型动画数据设置动画
 		this.setAnimations(gltf.animations);
 
 		// The visuals group is centered for easy character tilting
+		// 创建一个组方便管理和控制角色
 		this.tiltContainer = new THREE.Group();
+		// 因为this继承了THREE.Object3D，所以可以直接add
 		this.add(this.tiltContainer);
 
 		// Model container is used to reliably ground the character, as animation can alter the position of the model itself
+		// 再嵌套一层模型容器，更好的控制动画和角色的行为
 		this.modelContainer = new THREE.Group();
+		// 结合模型数据，调整y值
 		this.modelContainer.position.y = -0.57;
+		// tiltContainer 嵌套 modelContainer 嵌套 gltf.scene
 		this.tiltContainer.add(this.modelContainer);
 		this.modelContainer.add(gltf.scene);
 
+		// 创建动画混合器
 		this.mixer = new THREE.AnimationMixer(gltf.scene);
 
+		// 速度模拟器
 		this.velocitySimulator = new VectorSpringSimulator(60, this.defaultVelocitySimulatorMass, this.defaultVelocitySimulatorDamping);
+		// 旋转模拟器
 		this.rotationSimulator = new RelativeSpringSimulator(60, this.defaultRotationSimulatorMass, this.defaultRotationSimulatorDamping);
 
+		// 视图向量
 		this.viewVector = new THREE.Vector3();
 
 		// Actions
+		// 根据按键定义动作动画
 		this.actions = {
 			'up': new KeyBinding('KeyW'),
 			'down': new KeyBinding('KeyS'),
@@ -124,6 +136,7 @@ export class Character extends THREE.Object3D implements IWorldEntity
 
 		// Physics
 		// Player Capsule
+		// 创建物理碰撞的角色胶囊
 		this.characterCapsule = new CapsuleCollider({
 			mass: 1,
 			position: new CANNON.Vec3(),
@@ -133,17 +146,27 @@ export class Character extends THREE.Object3D implements IWorldEntity
 			friction: 0.0
 		});
 		// capsulePhysics.physical.collisionFilterMask = ~CollisionGroups.Trimesh;
+		// 设置能够碰撞的碰撞组
 		this.characterCapsule.body.shapes.forEach((shape) => {
 			// tslint:disable-next-line: no-bitwise
+			/**
+			 * 设置掩码
+			 * CollisionGroups.TrimeshColliders为4，即100
+			 * ~按位取反，得到011，即shape.collisionFilterMask为011
+			 */
 			shape.collisionFilterMask = ~CollisionGroups.TrimeshColliders;
 		});
+		// 允许休眠
 		this.characterCapsule.body.allowSleep = false;
 
 		// Move character to different collision group for raycasting
+		// 设置碰撞组
 		this.characterCapsule.body.collisionFilterGroup = 2;
 
 		// Disable character rotation
+		// 禁用角色旋转
 		this.characterCapsule.body.fixedRotation = true;
+		// 禁用完成要设置更新
 		this.characterCapsule.body.updateMassProperties();
 
 		// Ray cast debug
@@ -151,14 +174,18 @@ export class Character extends THREE.Object3D implements IWorldEntity
 		const boxMat = new THREE.MeshLambertMaterial({
 			color: 0xff0000
 		});
+		// 胶囊体下部的红色拿，方便调试
 		this.raycastBox = new THREE.Mesh(boxGeo, boxMat);
 		this.raycastBox.visible = false;
 
 		// Physics pre/post step callback bindings
+		// 更新前要做那些预处理
 		this.characterCapsule.body.preStep = (body: CANNON.Body) => { this.physicsPreStep(body, this); };
+		// 更新后要做那些处理
 		this.characterCapsule.body.postStep = (body: CANNON.Body) => { this.physicsPostStep(body, this); };
 
 		// States
+		// 更新角色状态为待机状态
 		this.setState(new Idle(this));
 	}
 

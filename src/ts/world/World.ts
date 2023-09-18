@@ -204,6 +204,7 @@ export class World
 				buttonsStyling: false
 			});
 		}
+		console.log(this.updatables);
 
 		// 渲染
 		this.render(this);
