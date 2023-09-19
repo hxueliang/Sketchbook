@@ -8,6 +8,11 @@ export class ClosestObjectFinder<T>
 	private referencePosition: THREE.Vector3;
 	private maxDistance: number = Number.POSITIVE_INFINITY;
 
+	/**
+	 * 查找最接近对象
+	 * @param referencePosition 参考位置
+	 * @param maxDistance 距离
+	 */
 	constructor(referencePosition: THREE.Vector3, maxDistance?: number)
 	{
 		this.referencePosition = referencePosition;
