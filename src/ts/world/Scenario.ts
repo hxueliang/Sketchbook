@@ -3,6 +3,7 @@ import { VehicleSpawnPoint } from './VehicleSpawnPoint';
 import { CharacterSpawnPoint } from './CharacterSpawnPoint';
 import { World } from '../world/World';
 import { LoadingManager } from '../core/LoadingManager';
+import { LuckyTrigger } from '../trigger/LuckyTrigger';
 
 export class Scenario
 {
@@ -105,6 +106,13 @@ export class Scenario
 						// 如果有玩家，把角色也重生
 						let sp = new CharacterSpawnPoint(child);
 						this.spawnPoints.push(sp);
+					}
+				}
+				else if(child.userData.data === 'trigger')
+				{
+					if(child.userData.type === 'lucky')
+					{
+						const luckyTrigger = new LuckyTrigger(child, world);
 					}
 				}
 			}
