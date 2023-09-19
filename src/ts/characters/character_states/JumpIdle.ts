@@ -17,7 +17,7 @@ export class JumpIdle extends CharacterStateBase implements ICharacterState
 		this.character.velocitySimulator.mass = 50;
 
 		this.character.setArcadeVelocityTarget(0);
-		this.playAnimation('jump_idle', 0.1);
+		this.playAnimation('Huangxiaoyan_UniquePose', 0.1);
 		this.alreadyJumped = false;
 	}
 

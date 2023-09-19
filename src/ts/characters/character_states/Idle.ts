@@ -20,7 +20,7 @@ export class Idle extends CharacterStateBase implements ICharacterState
 		this.character.velocitySimulator.mass = 10;
 
 		this.character.setArcadeVelocityTarget(0);
-		this.playAnimation('idle', 0.1);
+		this.playAnimation('Huangxiaoyan_Idle_00_loop', 0.1);
 	}
 
 	public update(timeStep: number): void
