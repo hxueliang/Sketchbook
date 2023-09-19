@@ -86,9 +86,6 @@ export class Character extends THREE.Object3D implements IWorldEntity
 	{
 		super();
 
-		// 修改模型的大小
-		gltf.scene.scale.set(0.63, 0.63, 0.63);
-
 		// 读取角色模型数据
 		this.readCharacterData(gltf);
 		// 根据模型动画数据设置动画

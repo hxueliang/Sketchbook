@@ -17,7 +17,7 @@ export class CharacterSpawnPoint implements ISpawnPoint
 	public spawn(loadingManager: LoadingManager, world: World): void
 	{
 		// 导入人物模型，如果需要修改人物模型，可以修改这个地址
-		loadingManager.loadGLTF('build/assets/Huangxiaoyan.glb', (model) =>
+		loadingManager.loadGLTF('build/assets/boxman.glb', (model) =>
 		{
 			// 创建角色
 			let player = new Character(model);
