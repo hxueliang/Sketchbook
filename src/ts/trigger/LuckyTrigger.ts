@@ -54,7 +54,7 @@ export class LuckyTrigger extends THREE.Object3D implements IUpdatable
   }
 
   update(timestep: number, unscaledTimeStep: number): void {
-    console.log(timestep, unscaledTimeStep);
+    // console.log(timestep, unscaledTimeStep);
     // 判断距离
     // 判断距离可以工程里的ClosestObjectFinder类
     const character = this.world.characters[0];

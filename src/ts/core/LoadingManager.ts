@@ -79,6 +79,9 @@ export class LoadingManager
 			else
 			{
 				UIManager.setUserInterfaceVisible(true);
+				if(this.world.mobile) {
+					UIManager.setUserInterfaceVisible(false);
+				}
 			}
 
 			UIManager.setLoadingScreenVisible(false);
@@ -101,6 +104,10 @@ export class LoadingManager
 					onClose: () => {
 						this.world.setTimeScale(1);
 						UIManager.setUserInterfaceVisible(true);
+
+						if(this.world.mobile) {
+							UIManager.setUserInterfaceVisible(false);
+						}
 					}
 				});
 			};

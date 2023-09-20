@@ -117,6 +117,11 @@ export class CameraOperator implements IInputReceiver, IUpdatable
 		}
 		else 
 		{
+			if(this.world.mobile && this.world.characters.length > 0) {
+				const { targetDirection: {z,x} } = this.world.characters[0];
+				this.theta = (-Math.atan2(z, x) + Math.PI / 2 + Math.PI) * 180 / Math.PI;
+			}
+
 			this.radius = THREE.MathUtils.lerp(this.radius, this.targetRadius, 0.1);
 	
 			this.camera.position.x = this.target.x + this.radius * Math.sin(this.theta * Math.PI / 180) * Math.cos(this.phi * Math.PI / 180);

@@ -79,6 +79,9 @@ export class Character extends THREE.Object3D implements IWorldEntity
 	public controlledObject: IControllable;
 	public occupyingSeat: VehicleSeat = null;
 	public vehicleEntryInstance: VehicleEntryInstance = null;
+
+	public targetPosition: THREE.Vector3 = new THREE.Vector3();
+	public targetDirection: THREE.Vector3 = new THREE.Vector3();
 	
 	private physicsEnabled: boolean = true;
 
@@ -520,6 +523,9 @@ export class Character extends THREE.Object3D implements IWorldEntity
 		}
 
 		this.world.cameraOperator.setRadius(1.6, true);
+		if(this.world.mobile) {
+			this.world.cameraOperator.setRadius(5, true);
+		}
 		this.world.cameraOperator.followMode = false;
 		// this.world.dirLight.target = this;
 
@@ -820,6 +826,18 @@ export class Character extends THREE.Object3D implements IWorldEntity
 	
 			vehicle.controllingCharacter = this;
 		}
+	}
+
+	public inputReceiverMove(event: any, vector: any) {
+		// 目标位置
+		this.targetPosition.copy(vector);
+		// 方向 = 目标位置 - 角色位置
+		this.targetDirection = this.targetPosition.sub(this.position).normalize();
+
+		// 设置往前走动作
+		this.triggerAction('up', true);
+		// 设置方向，false代表不是立马旋转到位，而是有旋转动画
+		this.setOrientation(this.targetDirection, false);
 	}
 
 	public transferControls(entity: IControllable): void

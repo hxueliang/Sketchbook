@@ -63,12 +63,14 @@ export class World
 	public paths: Path[] = [];
 	public scenarioGUIFolder: any;
 	public updatables: IUpdatable[] = [];
+	public mobile: boolean;
 
 	private lastScenarioID: string;
 
 	constructor(worldScenePath?: any)
 	{
 		const scope = this;
+		this.mobile = this.isMobile();
 
 		// WebGL not supported
 		if (!Detector.webgl)
@@ -183,6 +185,9 @@ export class World
 					onClose: () => {
 						// 显示用户控制界面
 						UIManager.setUserInterfaceVisible(true);
+						if(this.mobile) {
+							UIManager.setUserInterfaceVisible(false);
+						}
 					}
 				});
 			};
@@ -208,6 +213,10 @@ export class World
 
 		// 渲染
 		this.render(this);
+	}
+
+	public isMobile() {
+		return /Mobi|Android|iPhone/i.test(navigator.userAgent);
 	}
 
 	// Update

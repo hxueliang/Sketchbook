@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import { World } from '../world/World';
 import { IInputReceiver } from '../interfaces/IInputReceiver';
 import { EntityType } from '../enums/EntityType';
@@ -12,12 +13,18 @@ export class InputManager implements IUpdatable
 	public pointerLock: any;
 	public isLocked: boolean;
 	public inputReceiver: IInputReceiver; // 输入操作的接收者
+	public mouse: THREE.Vector2;
+	public raycaster: THREE.Raycaster;
+	public clock: THREE.Clock;
+
 
 	// 定义函数
 	public boundOnMouseDown: (evt: any) => void;
 	public boundOnMouseMove: (evt: any) => void;
 	public boundOnMouseUp: (evt: any) => void;
 	public boundOnMouseWheelMove: (evt: any) => void;
+	public boundOnDblclick: (evt: any) => void;
+	public boundOnTouchstart: (evt: any) => void;
 	public boundOnPointerlockChange: (evt: any) => void;
 	public boundOnPointerlockError: (evt: any) => void;
 	public boundOnKeyDown: (evt: any) => void;
@@ -34,6 +41,7 @@ export class InputManager implements IUpdatable
 		this.pointerLock = world.params.Pointer_Lock;
 		this.domElement = domElement || document.body;
 		this.isLocked = false;
+		this.clock = new THREE.Clock();
 		
 		// 创建函数
 		// Bindings for later event use
@@ -42,6 +50,8 @@ export class InputManager implements IUpdatable
 		this.boundOnMouseMove = (evt) => this.onMouseMove(evt);
 		this.boundOnMouseUp = (evt) => this.onMouseUp(evt);
 		this.boundOnMouseWheelMove = (evt) => this.onMouseWheelMove(evt);
+		this.boundOnDblclick = (evt) => this.onDblclick(evt);
+		this.boundOnTouchstart = (evt) => this.onTouchstart(evt);
 
 		// Pointer lock
 		this.boundOnPointerlockChange = (evt) => this.onPointerlockChange(evt);
@@ -51,6 +61,9 @@ export class InputManager implements IUpdatable
 		this.boundOnKeyDown = (evt) => this.onKeyDown(evt);
 		this.boundOnKeyUp = (evt) => this.onKeyUp(evt);
 
+		this.mouse = new THREE.Vector2();
+		this.raycaster = new THREE.Raycaster();
+
 		// 初始化事件监听器
 		// Init event listeners
 		// Mouse
@@ -58,6 +71,8 @@ export class InputManager implements IUpdatable
 		document.addEventListener('wheel', this.boundOnMouseWheelMove, false);
 		document.addEventListener('pointerlockchange', this.boundOnPointerlockChange, false);
 		document.addEventListener('pointerlockerror', this.boundOnPointerlockError, false);
+		document.addEventListener('dblclick', this.boundOnDblclick, false);
+		document.addEventListener('touchstart', this.boundOnTouchstart, false);
 		
 		// Keys
 		document.addEventListener('keydown', this.boundOnKeyDown, false);
@@ -113,8 +128,42 @@ export class InputManager implements IUpdatable
 		console.error('PointerLockControls: Unable to use Pointer Lock API');
 	}
 
+	public onDblclick(event: MouseEvent): void {
+		if(this.world.mobile) {
+			this.inputReceiver.triggerAction('up', false);
+		}
+	}
+
+	public onTouchstart(event: any): void {
+		const time = this.clock.getDelta();
+		if(time < 0.2) {
+			this.onDblclick(event);
+			return;
+		}
+		if(this.world.mobile) {
+			// 获取鼠标点击的位置
+			const {clientX: x, clientY: y} = event.touches[0];
+			// 将屏幕坐标转为标准的设备坐标
+			this.mouse.x = (x / window.innerWidth) * 2 - 1;
+			this.mouse.y = -(y / window.innerHeight) * 2 + 1;
+			// 设置射线的起点和方向
+			this.raycaster.setFromCamera(this.mouse, this.world.camera);
+			// 计算射线和物体的交点
+			const intersects = this.raycaster.intersectObjects(this.world.graphicsWorld.children, true);
+			// 如果有交点
+			if(intersects.length > 0) {
+				// 控制输入的接收者(角色)，移动到交点
+				this.inputReceiver?.inputReceiverMove(event, intersects[0].point);
+			}
+			return;
+		}
+	}
+
 	public onMouseDown(event: MouseEvent): void
 	{
+		if(this.world.mobile) {
+			return
+		}
 		if (this.pointerLock)
 		{
 			this.domElement.requestPointerLock();

@@ -7,6 +7,7 @@ import
 	Sprint,
 } from './_stateLibrary';
 import { Character } from '../Character';
+import { log } from 'three';
 
 export class Walk extends CharacterStateBase
 {
@@ -23,7 +24,9 @@ export class Walk extends CharacterStateBase
 	{
 		super.update(timeStep);
 
-		this.character.setCameraRelativeOrientationTarget();
+		if(this.character.world.mobile) {
+			this.character.setCameraRelativeOrientationTarget();
+		}
 
 		this.fallInAir();
 	}

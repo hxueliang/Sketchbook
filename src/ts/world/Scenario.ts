@@ -4,6 +4,7 @@ import { CharacterSpawnPoint } from './CharacterSpawnPoint';
 import { World } from '../world/World';
 import { LoadingManager } from '../core/LoadingManager';
 import { LuckyTrigger } from '../trigger/LuckyTrigger';
+import { UIManager } from '../core/UIManager';
 
 export class Scenario
 {
@@ -150,6 +151,9 @@ export class Scenario
 
 			world.cameraOperator.theta = this.initialCameraAngle;
 			world.cameraOperator.phi = 15;
+			if(world.mobile) {
+				world.cameraOperator.phi = 45;
+			}
 		}
 	}
 }

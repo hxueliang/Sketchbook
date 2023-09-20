@@ -11,4 +11,7 @@ export interface IInputReceiver
 
 	inputReceiverInit(): void;
 	inputReceiverUpdate(timeStep: number): void;
+
+	inputReceiverMove?(event: any, vector: any): void;
+	triggerAction?(action: string, isPress: boolean): void;
 }
