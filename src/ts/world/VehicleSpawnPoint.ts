@@ -52,6 +52,7 @@ export class VehicleSpawnPoint implements ISpawnPoint
 					{
 						character.takeControl();
 					}
+					// 如果是ai，让ai进行操控
 					else if (this.driver === 'ai')
 					{
 						if (this.firstAINode !== undefined)
@@ -59,6 +60,7 @@ export class VehicleSpawnPoint implements ISpawnPoint
 							let nodeFound = false;
 							for (const pathName in world.paths) {
 								if (world.paths.hasOwnProperty(pathName)) {
+									// 获取路径
 									const path = world.paths[pathName];
 									
 									for (const nodeName in path.nodes) {
@@ -67,6 +69,7 @@ export class VehicleSpawnPoint implements ISpawnPoint
 											
 											if (node.object.name === this.firstAINode)
 											{
+												// 设置玩家(这里的玩家是ai)的行为，跟随路径行为
 												character.setBehaviour(new FollowPath(node, 10));
 												nodeFound = true;
 											}

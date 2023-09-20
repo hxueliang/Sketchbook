@@ -18,6 +18,7 @@ export class FollowPath extends FollowTarget implements ICharacterAI
 	constructor(firstNode: PathNode, nodeRadius: number)
 	{
 		super(firstNode.object, 0);
+		// 节点半径
 		this.nodeRadius = nodeRadius;
 		this.targetNode = firstNode;
 	}
@@ -37,6 +38,7 @@ export class FollowPath extends FollowTarget implements ICharacterAI
 		let targetToNextNode = this.targetNode.nextNode.object.position.clone().sub(this.targetNode.object.position);
 		targetToNextNode.y = 0;
 		targetToNextNode.normalize();
+		// 得到减速角度，通过刚前结点方向和下一个结点方向计算得到
 		let slowDownAngle = viewVector.clone().normalize().dot(targetToNextNode);
 		let speed = (this.character.controlledObject as unknown as Vehicle).collision.velocity.length();
 
