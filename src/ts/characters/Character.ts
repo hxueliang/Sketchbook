@@ -671,37 +671,47 @@ export class Character extends THREE.Object3D implements IWorldEntity
 		this.initJumpSpeed = initJumpSpeed;
 	}
 
+	// 发现交通工具并进入
 	public findVehicleToEnter(wantsToDrive: boolean): void
 	{
 		// reusable world position variable
 		let worldPos = new THREE.Vector3();
 
 		// Find best vehicle
+		// 寻找10以内，最近交通工具
 		let vehicleFinder = new ClosestObjectFinder<Vehicle>(this.position, 10);
+		// 循环判断所有的交通工具，是否是最近的
 		this.world.vehicles.forEach((vehicle) =>
 		{
 			vehicleFinder.consider(vehicle, vehicle.position);
 		});
 
+		// 如果找到
 		if (vehicleFinder.closestObject !== undefined)
 		{
+			// 拿到交通工具
 			let vehicle = vehicleFinder.closestObject;
+			// 得到进入交通工具的实例
 			let vehicleEntryInstance = new VehicleEntryInstance(this);
+			// 想要进入驾驶，或退出交通工具
 			vehicleEntryInstance.wantsToDrive = wantsToDrive;
 
 			// Find best seat
 			let seatFinder = new ClosestObjectFinder<VehicleSeat>(this.position);
 			for (const seat of vehicle.seats)
 			{
+				// 想驾驶
 				if (wantsToDrive)
 				{
 					// Consider driver seats
+					// 考虑驾驶座位
 					if (seat.type === SeatType.Driver)
 					{
 						seat.seatPointObject.getWorldPosition(worldPos);
 						seatFinder.consider(seat, worldPos);
 					}
 					// Consider passenger seats connected to driver seats
+					// 考虑乘客座位和司机座位相连
 					else if (seat.type === SeatType.Passenger)
 					{
 						for (const connSeat of seat.connectedSeats)
@@ -715,9 +725,11 @@ export class Character extends THREE.Object3D implements IWorldEntity
 						}
 					}
 				}
+				// 不想驾驶
 				else
 				{
 					// Consider passenger seats
+					// 考虑乘客座位
 					if (seat.type === SeatType.Passenger)
 					{
 						seat.seatPointObject.getWorldPosition(worldPos);
@@ -726,6 +738,7 @@ export class Character extends THREE.Object3D implements IWorldEntity
 				}
 			}
 
+			// 寻找最近的座位
 			if (seatFinder.closestObject !== undefined)
 			{
 				let targetSeat = seatFinder.closestObject;
@@ -748,16 +761,24 @@ export class Character extends THREE.Object3D implements IWorldEntity
 		}
 	}
 
+	/**
+	 * 进入交通工具
+	 * @param seat 座位
+	 * @param entryPoint 进入点
+	 */
 	public enterVehicle(seat: VehicleSeat, entryPoint: THREE.Object3D): void
 	{
+		// 重置控制器
 		this.resetControls();
 
 		if (seat.door?.rotation < 0.5)
 		{
+			// 门没打开时，做执行开门动画
 			this.setState(new OpenVehicleDoor(this, seat, entryPoint));
 		}
 		else
 		{
+			// 门打开后，执行进入交通工具
 			this.setState(new EnteringVehicle(this, seat, entryPoint));
 		}
 	}
@@ -778,15 +799,23 @@ export class Character extends THREE.Object3D implements IWorldEntity
 		this.startControllingVehicle(vehicle, seat);
 	}
 
+	/**
+	 * 开始控制交通工具
+	 * @param vehicle 
+	 * @param seat 
+	 */
 	public startControllingVehicle(vehicle: IControllable, seat: VehicleSeat): void
 	{
 		if (this.controlledObject !== vehicle)
 		{
+			// 迁移输入控制到交通工具上
 			this.transferControls(vehicle);
+			// 重置控制器
 			this.resetControls();
 	
 			this.controlledObject = vehicle;
 			this.controlledObject.allowSleep(false);
+			// 交通工具按管输入控制
 			vehicle.inputReceiverInit();
 	
 			vehicle.controllingCharacter = this;

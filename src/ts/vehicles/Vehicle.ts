@@ -193,10 +193,12 @@ export abstract class Vehicle extends THREE.Object3D implements IWorldEntity
 
 		if (value)
 		{
+			// 0米的相机环绕半径，为第一人称
 			this.world.cameraOperator.setRadius(0, true);
 		}
 		else
 		{
+			// 3米的相机环绕半径，为第三人称
 			this.world.cameraOperator.setRadius(3, true);
 		}
 	}
@@ -247,9 +249,14 @@ export abstract class Vehicle extends THREE.Object3D implements IWorldEntity
 		this.world.scrollTheTimeScale(value);
 	}
 
+	/**
+	 * 按管输入控制
+	 */
 	public inputReceiverInit(): void
 	{
+		// 无需休眠
 		this.collision.allowSleep = false;
+		// 设置为第三人称视角，true为第一人称
 		this.setFirstPersonView(false);
 	}
 

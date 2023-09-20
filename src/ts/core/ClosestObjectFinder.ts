@@ -11,7 +11,7 @@ export class ClosestObjectFinder<T>
 	/**
 	 * 查找最接近对象
 	 * @param referencePosition 参考位置
-	 * @param maxDistance 距离
+	 * @param maxDistance 在多大的距离内查找
 	 */
 	constructor(referencePosition: THREE.Vector3, maxDistance?: number)
 	{

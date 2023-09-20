@@ -297,6 +297,10 @@ export class Car extends Vehicle implements IControllable
 
 		this.world.updateControls([
 			{
+				keys: [],
+				desc: '交通工具控制'
+			},
+			{
 				keys: ['W', 'S'],
 				desc: 'Accelerate, Brake / Reverse'
 			},

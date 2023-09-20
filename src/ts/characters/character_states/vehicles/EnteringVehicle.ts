@@ -29,6 +29,12 @@ export class EnteringVehicle extends CharacterStateBase
 
 	private factorSimulator: SpringSimulator;
 
+	/**
+	 * 进入交通工具
+	 * @param character 角色
+	 * @param seat 座位
+	 * @param entryPoint 进入位置
+	 */
 	constructor(character: Character, seat: VehicleSeat, entryPoint: Object3D)
 	{
 		super(character);
@@ -63,18 +69,23 @@ export class EnteringVehicle extends CharacterStateBase
 	{
 		super.update(timeStep);
 
+		// 上车动画结束之后
 		if (this.animationEnded(timeStep))
 		{
 			this.character.occupySeat(this.seat);
 			this.character.setPosition(this.endPosition.x, this.endPosition.y, this.endPosition.z);
 
+			// 如果进入的是驾驶位置
 			if (this.seat.type === SeatType.Driver)
 			{
 				if (this.seat.door) this.seat.door.physicsEnabled = true;
+				// 让角色进入驾驶状态
 				this.character.setState(new Driving(this.character, this.seat));
 			}
+			// 如果进入的是乘客位置
 			else if (this.seat.type === SeatType.Passenger)
 			{
+				// 让角色进入乘客状态
 				this.character.setState(new Sitting(this.character, this.seat));
 			}
 		}
